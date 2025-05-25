@@ -1,0 +1,1 @@
+# Text embedding models for Vertex AI provider 

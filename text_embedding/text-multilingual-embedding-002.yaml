@@ -1,0 +1,14 @@
+model: text-multilingual-embedding-002
+label:
+    en_US: text-multilingual-embedding-002
+    zh_Hans: text-multilingual-embedding-002
+model_type: text-embedding
+features: []
+model_properties:
+    context_size: 2048
+    max_chunks: 1
+parameter_rules: []
+pricing:
+    input: 0.00002
+    unit: 0.000001
+    currency: USD 
