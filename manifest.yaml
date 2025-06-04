@@ -13,7 +13,7 @@ resource:
     memory: 268435456 # 256MB
     permission: {}
 plugins:
-    model:
+    models:
         - provider/vertex_embedding.yaml
 meta:
     version: 0.0.23
