@@ -64,12 +64,19 @@ jobs:
         # Create parent directory for packaging (Dify CLI must run from outside plugin dir)
         mkdir -p ../temp-packaging
         
+        # Copy the dify-plugin binary to temp-packaging directory
+        cp dify-plugin ../temp-packaging/
+        
         # Copy the entire plugin directory to temp location
-        cp -r . ../temp-packaging/plugin
+        cp -r . ../temp-packaging/plugin/
+        
+        # Remove the dify-plugin binary from the copied plugin directory (we don't want it in the package)
+        rm -f ../temp-packaging/plugin/dify-plugin
+        
         cd ../temp-packaging
         
         # Package the plugin using Dify CLI from outside the plugin directory
-        ../plugin/dify-plugin plugin package plugin
+        ./dify-plugin plugin package plugin
         
         # Move the generated package back to the workspace
         if [ -f "plugin.difypkg" ]; then
