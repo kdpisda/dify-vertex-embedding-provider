@@ -1,4 +1,4 @@
-version: 0.0.23
+version: 0.0.24
 type: plugin
 author: kdpisda
 name: vertex-embedding-provider
@@ -16,7 +16,7 @@ plugins:
     models:
         - provider/vertex_embedding.yaml
 meta:
-    version: 0.0.23
+    version: 0.0.24
     arch:
         - amd64
         - arm64
