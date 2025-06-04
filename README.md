@@ -2,6 +2,39 @@
 
 This Dify plugin provides text embeddings using Google's `text-multilingual-embedding-002` model through Vertex AI. It integrates seamlessly with Dify's embedding system for semantic search, similarity comparison, and other vector operations.
 
+## Installation
+
+### Option 1: Install from GitHub Release (Recommended)
+
+1. In your Dify application, go to **Settings** → **Model Providers**
+2. Click **Install Plugin**
+3. Enter the GitHub release URL:
+   ```
+   https://github.com/kdpisda/dify-vertex-embedding-provider/releases/latest/download/vertex-embedding-provider-[VERSION].tar.gz
+   ```
+   Replace `[VERSION]` with the specific version tag (e.g., `v0.0.1`)
+
+### Option 2: Manual Installation
+
+1. Download the latest release from the [Releases page](https://github.com/kdpisda/dify-vertex-embedding-provider/releases)
+2. Upload the downloaded archive through Dify's plugin installation interface
+
+## Creating Releases (For Developers)
+
+This repository uses GitHub Actions to automatically create releases. To create a new release:
+
+1. Update the version in `manifest.yaml` if needed
+2. Create and push a new tag:
+   ```bash
+   git tag v0.0.2
+   git push origin v0.0.2
+   ```
+3. GitHub Actions will automatically:
+   - Create a new release
+   - Package the plugin files
+   - Generate release notes
+   - Upload the plugin archives
+
 ## Features
 
 - Uses Google's state-of-the-art `text-multilingual-embedding-002` model

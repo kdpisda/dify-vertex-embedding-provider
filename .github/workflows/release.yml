@@ -1,0 +1,119 @@
+name: Release Dify Plugin
+
+on:
+  push:
+    tags:
+      - 'v*'  # Triggers on version tags like v1.0.0, v0.0.1, etc.
+
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+    
+    - name: Get tag name
+      id: tag
+      run: echo "tag_name=${GITHUB_REF#refs/tags/}" >> $GITHUB_OUTPUT
+    
+    - name: Update manifest version
+      run: |
+        # Extract version from tag (remove 'v' prefix)
+        VERSION=${GITHUB_REF#refs/tags/v}
+        # Update version in manifest.yaml
+        sed -i "s/^version: .*/version: $VERSION/" manifest.yaml
+        sed -i "s/^    version: .*/    version: $VERSION/" manifest.yaml
+    
+    - name: Create plugin archive
+      run: |
+        # Create a clean archive with all plugin files
+        mkdir -p release-temp
+        
+        # Copy all necessary plugin files
+        cp -r provider/ release-temp/
+        cp -r text_embedding/ release-temp/
+        cp manifest.yaml release-temp/
+        cp main.py release-temp/
+        cp requirements.txt release-temp/
+        cp icon.svg release-temp/
+        cp LICENSE release-temp/
+        cp PRIVACY.md release-temp/
+        cp README.md release-temp/
+        
+        # Create the plugin archive
+        cd release-temp
+        tar -czf ../vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz .
+        cd ..
+        
+        # Also create a zip file for broader compatibility
+        cd release-temp
+        zip -r ../vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.zip .
+        cd ..
+    
+    - name: Generate release notes
+      id: release_notes
+      run: |
+        cat > release_notes.md << EOF
+        # Vertex AI Embedding Provider v${{ steps.tag.outputs.tag_name }}
+        
+        A Dify plugin that provides text embeddings using Google's text-multilingual-embedding-002 model through Vertex AI.
+        
+        ## Installation
+        
+        ### Option 1: Direct URL Installation (Recommended)
+        1. In your Dify application, go to **Settings** → **Model Providers**
+        2. Click **Install Plugin**  
+        3. Enter this GitHub release URL:
+           \`https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag_name }}/vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz\`
+        4. Follow the setup instructions in the README
+        
+        ### Option 2: Manual Download
+        1. Download the plugin archive from the assets below
+        2. Upload it manually through Dify's plugin installation interface
+        
+        ## What's Included
+        - Vertex AI text-multilingual-embedding-002 model support
+        - 768-dimensional embeddings
+        - Multi-language support (100+ languages)
+        - Secure credential management
+        
+        ## Prerequisites
+        - Google Cloud Platform account
+        - Vertex AI API enabled
+        - Service account with proper permissions
+        
+        See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for detailed setup instructions.
+        EOF
+    
+    - name: Create GitHub Release
+      uses: actions/create-release@v1
+      id: create_release
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        tag_name: ${{ steps.tag.outputs.tag_name }}
+        release_name: Vertex AI Embedding Provider ${{ steps.tag.outputs.tag_name }}
+        body_path: release_notes.md
+        draft: false
+        prerelease: ${{ contains(steps.tag.outputs.tag_name, 'alpha') || contains(steps.tag.outputs.tag_name, 'beta') || contains(steps.tag.outputs.tag_name, 'rc') }}
+    
+    - name: Upload tar.gz archive
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz
+        asset_name: vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz
+        asset_content_type: application/gzip
+    
+    - name: Upload zip archive
+      uses: actions/upload-release-asset@v1
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      with:
+        upload_url: ${{ steps.create_release.outputs.upload_url }}
+        asset_path: ./vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.zip
+        asset_name: vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.zip
+        asset_content_type: application/zip 

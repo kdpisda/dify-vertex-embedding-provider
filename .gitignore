@@ -273,4 +273,14 @@ temp/
 # Local configuration
 config.local.yaml
 config.local.json
-local_config.py 
+local_config.py
+
+# Dify Plugin Release Artifacts
+*.tar.gz
+*.zip
+release-temp/
+release_notes.md
+*.bak
+
+# macOS specific
+.DS_Store 
