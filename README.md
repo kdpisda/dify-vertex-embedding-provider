@@ -10,18 +10,19 @@ This Dify plugin provides text embeddings using Google's `text-multilingual-embe
 2. Click **Install Plugin**
 3. Enter the GitHub release URL:
    ```
-   https://github.com/kdpisda/dify-vertex-embedding-provider/releases/latest/download/vertex-embedding-provider-[VERSION].tar.gz
+   https://github.com/kdpisda/dify-vertex-embedding-provider/releases/latest/download/vertex-embedding-provider-[VERSION].difypkg
    ```
    Replace `[VERSION]` with the specific version tag (e.g., `v0.0.1`)
 
 ### Option 2: Manual Installation
 
-1. Download the latest release from the [Releases page](https://github.com/kdpisda/dify-vertex-embedding-provider/releases)
-2. Upload the downloaded archive through Dify's plugin installation interface
+1. Download the latest `.difypkg` file from the [Releases page](https://github.com/kdpisda/dify-vertex-embedding-provider/releases)
+2. In Dify, go to **Settings** → **Model Providers** → **Install Plugin** → **Install via Local File**
+3. Upload the downloaded `.difypkg` file
 
 ## Creating Releases (For Developers)
 
-This repository uses GitHub Actions to automatically create releases. To create a new release:
+This repository uses GitHub Actions to automatically create releases with proper Dify plugin packaging. To create a new release:
 
 1. Update the version in `manifest.yaml` if needed
 2. Create and push a new tag:
@@ -30,10 +31,20 @@ This repository uses GitHub Actions to automatically create releases. To create 
    git push origin v0.0.2
    ```
 3. GitHub Actions will automatically:
-   - Create a new release
-   - Package the plugin files
-   - Generate release notes
-   - Upload the plugin archives
+   - Update the manifest version
+   - Download the official Dify plugin CLI tool
+   - Package the plugin using the official Dify packaging format (`.difypkg`)
+   - Create a new release with proper installation instructions
+   - Upload the `.difypkg` file as a release asset
+
+### Using the Helper Script
+
+Alternatively, use the included helper script:
+```bash
+./scripts/create-release.sh v0.0.2
+```
+
+This script will handle version updates, git operations, and trigger the automated packaging process.
 
 ## Features
 

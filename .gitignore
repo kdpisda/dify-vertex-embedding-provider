@@ -276,11 +276,11 @@ config.local.json
 local_config.py
 
 # Dify Plugin Release Artifacts
-*.tar.gz
-*.zip
-release-temp/
+*.difypkg
 release_notes.md
 *.bak
+dify-plugin
+release-temp/
 
 # macOS specific
 .DS_Store 

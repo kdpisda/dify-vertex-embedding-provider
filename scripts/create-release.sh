@@ -112,8 +112,9 @@ git push origin "$VERSION"
 
 print_status "Release process initiated!"
 print_status "GitHub Actions will now create the release automatically."
+print_status "The official Dify plugin CLI will be used to create a proper .difypkg package."
 print_status "You can monitor the progress at: https://github.com/$(git config --get remote.origin.url | sed 's/.*github.com[:/]\([^.]*\).*/\1/')/actions"
 
 echo
 print_status "Once the release is created, users can install the plugin using:"
-echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*github.com[:/]\([^.]*\).*/\1/')/releases/download/$VERSION/vertex-embedding-provider-$VERSION.tar.gz" 
+echo "https://github.com/$(git config --get remote.origin.url | sed 's/.*github.com[:/]\([^.]*\).*/\1/')/releases/download/$VERSION/vertex-embedding-provider-$VERSION.difypkg" 
