@@ -5,6 +5,9 @@ on:
     tags:
       - 'v*'  # Triggers on version tags like v1.0.0, v0.0.1, etc.
 
+permissions:
+  contents: write  # Required for creating releases and uploading assets
+
 jobs:
   release:
     runs-on: ubuntu-latest
@@ -52,10 +55,9 @@ jobs:
         cd ..
     
     - name: Generate release notes
-      id: release_notes
       run: |
-        cat > release_notes.md << EOF
-        # Vertex AI Embedding Provider v${{ steps.tag.outputs.tag_name }}
+        cat > release_notes.md << 'EOF'
+        # Vertex AI Embedding Provider ${{ steps.tag.outputs.tag_name }}
         
         A Dify plugin that provides text embeddings using Google's text-multilingual-embedding-002 model through Vertex AI.
         
@@ -65,7 +67,9 @@ jobs:
         1. In your Dify application, go to **Settings** → **Model Providers**
         2. Click **Install Plugin**  
         3. Enter this GitHub release URL:
-           \`https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag_name }}/vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz\`
+           ```
+           https://github.com/${{ github.repository }}/releases/download/${{ steps.tag.outputs.tag_name }}/vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz
+           ```
         4. Follow the setup instructions in the README
         
         ### Option 2: Manual Download
@@ -86,34 +90,14 @@ jobs:
         See the [README](https://github.com/${{ github.repository }}/blob/main/README.md) for detailed setup instructions.
         EOF
     
-    - name: Create GitHub Release
-      uses: actions/create-release@v1
-      id: create_release
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Create Release
+      uses: softprops/action-gh-release@v2
       with:
-        tag_name: ${{ steps.tag.outputs.tag_name }}
-        release_name: Vertex AI Embedding Provider ${{ steps.tag.outputs.tag_name }}
+        name: Vertex AI Embedding Provider ${{ steps.tag.outputs.tag_name }}
         body_path: release_notes.md
         draft: false
         prerelease: ${{ contains(steps.tag.outputs.tag_name, 'alpha') || contains(steps.tag.outputs.tag_name, 'beta') || contains(steps.tag.outputs.tag_name, 'rc') }}
-    
-    - name: Upload tar.gz archive
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz
-        asset_name: vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz
-        asset_content_type: application/gzip
-    
-    - name: Upload zip archive
-      uses: actions/upload-release-asset@v1
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.zip
-        asset_name: vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.zip
-        asset_content_type: application/zip 
+        files: |
+          vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.tar.gz
+          vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.zip
+        token: ${{ secrets.GITHUB_TOKEN }} 
