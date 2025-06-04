@@ -281,6 +281,11 @@ release_notes.md
 *.bak
 dify-plugin
 release-temp/
+temp-packaging/
+
+# Track _assets directory but ignore temporary files in it
+_assets/*.tmp
+_assets/*.temp
 
 # macOS specific
 .DS_Store 

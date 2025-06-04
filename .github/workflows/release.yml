@@ -50,24 +50,41 @@ jobs:
     
     - name: Package Plugin with Dify CLI
       run: |
-        # Create the .difypkg file using official Dify packaging tool
-        ./dify-plugin plugin package .
+        # Ensure _assets directory exists and copy icon there if needed
+        mkdir -p _assets
+        if [ -f "icon.svg" ] && [ ! -f "_assets/icon.svg" ]; then
+          cp icon.svg _assets/
+        fi
         
-        # The tool should create a .difypkg file - find it
-        DIFYPKG_FILE=$(find . -name "*.difypkg" -type f | head -1)
+        if [ ! -f "_assets/icon.svg" ]; then
+          echo "Error: _assets/icon.svg is missing. Icon should be in _assets directory."
+          exit 1
+        fi
         
-        if [ -z "$DIFYPKG_FILE" ]; then
+        # Create parent directory for packaging (Dify CLI must run from outside plugin dir)
+        mkdir -p ../temp-packaging
+        
+        # Copy the entire plugin directory to temp location
+        cp -r . ../temp-packaging/plugin
+        cd ../temp-packaging
+        
+        # Package the plugin using Dify CLI from outside the plugin directory
+        ../plugin/dify-plugin plugin package plugin
+        
+        # Move the generated package back to the workspace
+        if [ -f "plugin.difypkg" ]; then
+          mv plugin.difypkg "${GITHUB_WORKSPACE}/vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.difypkg"
+        else
           echo "Error: No .difypkg file was created"
-          echo "Files in current directory:"
+          echo "Files in packaging directory:"
           ls -la
           exit 1
         fi
         
-        # Rename the file to include version
-        PLUGIN_NAME="vertex-embedding-provider"
-        mv "$DIFYPKG_FILE" "${PLUGIN_NAME}-${{ steps.tag.outputs.tag_name }}.difypkg"
+        # Return to workspace
+        cd "${GITHUB_WORKSPACE}"
         
-        echo "Created package: ${PLUGIN_NAME}-${{ steps.tag.outputs.tag_name }}.difypkg"
+        echo "Created package: vertex-embedding-provider-${{ steps.tag.outputs.tag_name }}.difypkg"
         ls -la *.difypkg
     
     - name: Generate release notes
